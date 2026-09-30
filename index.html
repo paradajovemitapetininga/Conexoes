@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0d4d70" />
+  <meta name="description" content="Catálogo de cursos da Conexões Polo 1 em Itapetininga: dias, horários, professores e status de vagas." />
+  <meta name="keywords" content="Conexões Polo 1, cursos, Itapetininga, esporte, educação, cultura" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Conexões Polo 1" />
+  <meta property="og:title" content="Conexões Polo 1 — Catálogo de Cursos" />
+  <meta property="og:description" content="Encontre cursos, dias e horários da Conexões Polo 1." />
+  <link rel="icon" type="image/x-icon" href="https://res.cloudinary.com/ge9yksty/image/upload/v1790778059/ChatGPT_Image_30_de_set._de_2026_11_20_00.png">
+  <title>Conexões Polo 1 — Catálogo de Cursos</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <a class="skip-link" href="#cursos">Pular para o catálogo</a>
+
+  <header class="site-header">
+    <div class="container nav-wrap">
+      <a class="brand" href="#top" aria-label="Conexões Polo 1, início">
+        <img class="site-logo" id="custom-logo" src="https://res.cloudinary.com/ge9yksty/image/upload/v1790778109/ChatGPT_Image_30_de_set._de_2026__11_19_14-removebg-preview.png" alt="Conexões — um programa para todos" />
+      </a>
+      <button class="menu-toggle" aria-expanded="false" aria-controls="site-nav">Menu</button>
+      <nav id="site-nav" class="site-nav" aria-label="Navegação principal">
+        <a href="#top">Início</a>
+        <a href="#sobre">Sobre</a>
+        <a href="#cursos">Cursos</a>
+        <a href="#contato">Contato</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="top">
+    <section id="sobre" class="hero" aria-labelledby="hero-title">
+      <div class="hero-copy">
+        <div class="hero-copy-inner">
+          <h1 id="hero-title">Conexões – Polo 1</h1>
+          <p>O Conexões – Polo 1 é um espaço gratuito de convivência, aprendizagem, cultura, esporte e desenvolvimento social, destinado a crianças, adolescentes, adultos e idosos.</p>
+          <p>O polo oferece diversas atividades e oficinas que contribuem para o desenvolvimento de habilidades, a descoberta de novos talentos, a criatividade, a disciplina, a convivência e a inclusão social.</p>
+          <p>Entre as atividades oferecidas estão:</p>
+          <ul>
+            <li><b>Esportes:</b> Capoeira, Futebol de Campo, Hapkido, Tênis de Mesa, Ballet, Jazz, Dança, Sapateado, Alongamento e Expressão Corporal;</li>
+            <li><b>Educação:</b> Informática, Inglês, Desenho e Xadrez;</li>
+            <li><b>Cultura e Artes:</b> Artesanato, Coral, Fanfarra, Musicalização, Teatro, Violão e Violino.</li>
+          </ul>
+          <p>As oficinas são organizadas de acordo com a faixa etária e a disponibilidade de cada atividade. A programação e os horários podem ser atualizados conforme a formação de novas turmas e a disponibilidade de vagas.</p>
+          <p>O Conexões – Polo 1 tem como objetivo oferecer à comunidade oportunidades de aprendizado, prática esportiva, expressão artística, convivência e desenvolvimento pessoal, promovendo o acesso gratuito a atividades que contribuem para a formação e a qualidade de vida dos participantes.</p>
+        </div>
+      </div>
+      <div class="campus-art" role="img" aria-label="Fotos da unidade Conexões Polo 1">
+        <img class="campus-photo campus-photo-one" id="campus-photo-one" src="https://res.cloudinary.com/ge9yksty/image/upload/v1790775961/ChatGPT_Image_30_de_set._de_2026_10_45_26.png" alt="Foto principal da unidade" />
+        <img class="campus-photo campus-photo-two" id="campus-photo-two" src="https://res.cloudinary.com/ge9yksty/image/upload/v1790775967/ChatGPT_Image_30_de_set._de_2026_10_45_32.png" alt="Foto complementar da unidade" />
+        <div class="art-label">Endereço: R. Itapeva, 395 - Vila Arruda<br />Itapetininga - SP, 18212-180</div>
+      </div>
+    </section>
+    <section id="cursos" class="catalog" aria-labelledby="catalog-title">
+      <div class="catalog-header-block">
+        <h2 id="catalog-title">Cursos</h2>
+      </div>
+
+      <div class="container controls-container">
+        <div class="controls" aria-label="Filtros do catálogo">
+          <label class="search-field">
+            <span class="sr-only">Buscar curso</span>
+            <input id="search" type="search" placeholder="Buscar curso, professor..." autocomplete="off" />
+            <span aria-hidden="true">⌕</span>
+          </label>
+          <div class="period-filters" role="group" aria-label="Filtrar por período">
+            <button class="filter-btn is-active" data-period="todos">Todos</button>
+            <button class="filter-btn" data-period="manhã">Manhã</button>
+            <button class="filter-btn" data-period="tarde">Tarde</button>
+            <button class="filter-btn" data-period="noite">Noite</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="catalog-grid" class="catalog-grid" aria-live="polite"></div>
+      <p id="empty-state" class="empty-state" hidden>Nenhum curso encontrado. Tente outro termo ou período.</p>
+    </section>
+  </main>
+
+  <footer id="contato" class="site-footer">
+    <div class="container footer-content">
+      <div class="footer-top-text">
+        <h2>Conexões – Polo 1</h2>
+        <p class="footer-title">Entre em contato conosco</p>
+      </div>
+      <div class="footer-body-grid">
+        <div class="footer-info">
+          <p>Tem dúvidas sobre as atividades, inscrições ou horários? Entre em contato com o Conexões – Polo 1.</p>
+          <p><strong>WhatsApp:</strong> <a href="https://wa.me/551533731002">(15) 3373-1002</a></p>
+          <p><strong>Atendimento:</strong> Conexões – Polo 1, Itapetininga – SP</p>
+          <p><strong>Instagram:</strong> @conexoes1.itape</p>
+        </div>
+        <div class="footer-schedule">
+          <h2>Atendimento</h2>
+          <p>Segunda a sexta-feira<br />Das 8h às 20h<br /><span class="footer-muted">Exceto feriados.</span></p>
+        </div>
+        <div class="footer-brand-box">
+          <a class="brand brand-light" href="#top">
+            <img class="site-logo footer-logo" id="footer-logo" src="https://res.cloudinary.com/ge9yksty/image/upload/v1790776288/Conex%C3%B5es-removebg-preview.png" alt="Conexões — um programa para todos" />
+          </a>
+        </div>
+      </div>
+    </div>
+    <div class="container footer-bottom">
+      <span>© 2026 Conexões Polo 1</span>
+      <span>Informação sujeita à atualização pela instituição.</span>
+    </div>
+  </footer>
+
+  <script src="/app.js" defer></script>
+</body>
+</html>
