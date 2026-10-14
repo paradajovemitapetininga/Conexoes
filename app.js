@@ -44,3 +44,17 @@ document.querySelectorAll('input[data-image-key]').forEach(input=>input.addEvent
 document.querySelector('#reset-images').addEventListener('click',()=>{Object.keys(imageStore).forEach(key=>delete imageStore[key]);saveImages();applyBrand();document.querySelector('#campus-photo-one').src='/campus-1.jpg';document.querySelector('#campus-photo-two').src='/campus-2.jpg';document.querySelectorAll('.campus-photo').forEach(image=>{image.hidden=false});document.querySelector('.campus-art')?.classList.remove('has-photos');render()});
 applyBrand();applyCampus();
 render();
+
+const { createClient } = supabase;
+const db = createClient("https://cuameefomltdijuygzoy.supabase.co", "sb_publishable_7lLG9eRfGVc3PKp19b1Ogg_eFnEiORu");
+
+async function carregarCursos() {
+  const { data, error } = await db
+    .from("cursos_publicos")
+    .select("*")
+    .order("nome");
+
+  if (error) { console.error(error); return; }
+  renderizarCards(data); // sua função que monta os cards
+}
+carregarCursos();
