@@ -66,3 +66,7 @@ async function filtrar(entrada, saida) {   // ex.: "14:00", "17:00"
   if (error) { console.error(error); return; }
   renderizarCards(data);   // adapte à sua função que monta os cards
 }
+const { data } = await db
+  .from('horarios')
+  .select('dia_semana, hora_inicio, hora_fim, status, oficinas(nome, categorias(nome)), professores(nome)')
+  .order('dia_semana');
