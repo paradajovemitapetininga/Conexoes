@@ -58,3 +58,11 @@ async function carregarCursos() {
   renderizarCards(data); // sua função que monta os cards
 }
 carregarCursos();
+async function filtrar(entrada, saida) {   // ex.: "14:00", "17:00"
+  const { data, error } = await db.rpc('oficinas_compativeis', {
+    p_entrada: entrada,
+    p_saida: saida
+  });
+  if (error) { console.error(error); return; }
+  renderizarCards(data);   // adapte à sua função que monta os cards
+}
