@@ -3,6 +3,7 @@ const STATUS_OVERRIDES = {
   // Exemplo: 'teatro|manhã|segunda-feira': 'Últimas vagas'
 };
 const DEFAULT_STATUS = 'Vagas disponíveis';
+const BOOKING_WORKSHOPS = ['Violino', 'Informática', 'Flauta'];
 
 const courses = [
   ['Teatro','Cultura e Artes','manhã','segunda-feira','8h–9h','Silvina'],['Alongamento Danjeon','Esporte e Lazer','manhã','segunda-feira','8h–9h','Marcos'],['Alongamento','Esporte e Lazer','manhã','quinta-feira','8h30–9h30','Renato'],['Hapkido','Esporte e Lazer','manhã','segunda-feira','9h–10h','Marcos'],['Desenho','Educação e Conhecimento','manhã','quarta-feira','9h–10h','Grazi'],['Musicalização','Educação e Conhecimento','manhã','quinta-feira','9h–10h','Seme'],['Dança / Jazz iniciante','Esporte e Lazer','manhã','quinta-feira','9h30–10h30','Renato'],['Capoeira','Esporte e Lazer','manhã','quarta-feira','10h–11h','Grazi'],['Violão juvenil e adulto iniciante','Educação e Conhecimento','manhã','quinta-feira','10h–11h','Seme'],['Tênis de mesa','Esporte e Lazer','manhã','quarta-feira','10h–12h','Felipe'],['Jazz intermediário','Esporte e Lazer','manhã','quinta-feira','10h30–11h30','Renato'],['Sapateado juvenil e adulto','Cultura e Artes','manhã','quinta-feira','10h45','—'],
@@ -27,6 +28,15 @@ const isBookingWorkshop = (name) => /^(violino|informatica|flauta)(?:\b|$)/i.tes
 function statusFor(course){if(course.status)return course.status;const key=`${slug(course.name)}|${course.period}|${course.day}`;return STATUS_OVERRIDES[key] || DEFAULT_STATUS}
 function statusClass(status){return status.toLowerCase().includes('lotad')?'status-full':status.toLowerCase().includes('últ')?'status-last':'status-open'}
 function escapeHtml(value){return String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]))}
+function renderBookingWorkshops(){
+  const root=document.querySelector('#workshop-list');
+  if(!root)return;
+  root.innerHTML=BOOKING_WORKSHOPS.map(name=>{
+    const message=`Olá, gostaria de agendar a oficina de ${name}. Quais dias e horários estão disponíveis?`;
+    const href=`https://wa.me/551533731002?text=${encodeURIComponent(message)}`;
+    return `<article class="course-card workshop-card"><div class="course-top"><h3>${escapeHtml(name)}</h3><span class="status status-schedule">Agendamento necessário</span></div><p>Dias e horários a combinar com a equipe do Conexões – Polo 1.</p><a class="workshop-link" href="${href}" target="_blank" rel="noopener noreferrer">Agendar pelo WhatsApp</a></article>`;
+  }).join('');
+}
 function render(){
   const term=document.querySelector('#search').value.trim().toLowerCase();
   const period=document.querySelector('.filter-btn.is-active')?.dataset.period || 'todos';
@@ -47,6 +57,7 @@ document.querySelectorAll('.site-nav a').forEach(a=>a.addEventListener('click',(
 document.querySelectorAll('input[data-image-key]').forEach(input=>input.addEventListener('change',()=>{const file=input.files?.[0];if(!file)return;const reader=new FileReader();reader.onload=()=>{imageStore[input.dataset.imageKey]=reader.result;saveImages();applyBrand();applyCampus();render()};reader.readAsDataURL(file)}));
 const resetImages=document.querySelector('#reset-images');if(resetImages)resetImages.addEventListener('click',()=>{Object.keys(imageStore).forEach(key=>delete imageStore[key]);saveImages();applyBrand();document.querySelector('#campus-photo-one').src='/campus-1.jpg';document.querySelector('#campus-photo-two').src='/campus-2.jpg';document.querySelectorAll('.campus-photo').forEach(image=>{image.hidden=false});document.querySelector('.campus-art')?.classList.remove('has-photos');render()});
 applyBrand();applyCampus();
+renderBookingWorkshops();
 render();
 
 const SUPABASE_URL = "https://cuameefomltdijuygzoy.supabase.co";
