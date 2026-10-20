@@ -77,6 +77,8 @@ a { color: inherit; text-decoration: none; }
   background: #739451;
   overflow: hidden;
 }
+.campus-art:hover .campus-photo-one { transform: scale(1.08) rotate(-1.5deg); }
+.campus-art:hover .campus-photo-two { transform: scale(1.08) rotate(1.5deg); }
 .campus-photo {
   position: absolute;
   object-fit: cover;
@@ -84,6 +86,7 @@ a { color: inherit; text-decoration: none; }
   box-shadow: 0 12px 28px rgba(13, 77, 112, 0.25);
   z-index: 2;
   border-radius: 6px;
+  transition: transform .45s cubic-bezier(.2,.75,.25,1);
 }
 .campus-photo-one { width: 78%; height: 50%; top: 8%; left: 11%; transform: rotate(-1.5deg); }
 .campus-photo-two { width: 72%; height: 42%; bottom: 18%; right: 11%; transform: rotate(1.5deg); }
@@ -211,6 +214,21 @@ a { color: inherit; text-decoration: none; }
 .course-card dd { display: inline; margin: 0; }
 .course-card dd + dt:before { content: " · "; color: #b8c2c8; }
 
+/* Oficinas com dias e horários combinados por agendamento */
+.workshops-section { padding: 44px 0 64px; background: #eef6f8; }
+.workshops-heading { margin: 0 auto 20px; max-width: 1180px; }
+.workshops-heading h2 { margin: 0 0 6px; color: var(--blue); font-size: clamp(1.7rem, 3vw, 2.4rem); letter-spacing: -.03em; }
+.workshops-heading p { margin: 0; color: var(--muted); }
+.workshop-course-list { padding-bottom: 0; }
+.workshop-card { display: flex; flex-direction: column; gap: 14px; min-height: 210px; }
+.workshop-card h3 { margin: 0; color: var(--blue); font-size: 1.05rem; }
+.workshop-card p { margin: 0; color: var(--muted); font-size: .85rem; }
+.workshop-card .status-schedule { background: #fff2c7; color: #765d00; }
+.workshop-link { align-self: flex-start; margin-top: auto; border-radius: 8px; padding: 9px 13px; background: var(--blue); color: #fff; font-size: .82rem; font-weight: 700; transition: background .2s, transform .2s; }
+.workshop-link:hover, .workshop-link:focus-visible { background: var(--blue-2); transform: translateY(-1px); }
+
+.status-schedule:before { background: currentColor; }
+
 .status {
   display: inline-flex;
   align-items: center;
@@ -268,4 +286,8 @@ a { color: inherit; text-decoration: none; }
   .upload-grid { grid-template-columns: 1fr; }
   .footer-body-grid { grid-template-columns: 1fr; gap: 20px; }
   .footer-bottom { display: block; line-height: 1.8; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .campus-photo, .workshop-link { transition: none; }
 }
