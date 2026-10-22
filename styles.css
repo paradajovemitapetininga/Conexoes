@@ -172,6 +172,48 @@ a { color: inherit; text-decoration: none; }
   cursor: pointer;
 }
 .filter-btn:hover, .filter-btn.is-active { background: var(--blue); color: #fff; border-color: var(--blue); }
+.filter-btn:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+
+/* Filtro por dia da semana */
+.filter-group { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.day-filter {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 0 16px;
+  color: var(--muted);
+  transition: border-color .2s, box-shadow .2s;
+}
+.day-filter:hover { border-color: rgba(13, 77, 112, .35); }
+.day-filter:focus-within { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(13, 77, 112, .2); }
+.day-filter-label {
+  font-size: .7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  white-space: nowrap;
+}
+.day-filter select {
+  appearance: none;
+  -webkit-appearance: none;
+  border: 0;
+  outline: 0;
+  background-color: transparent;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%235c7180' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right center;
+  background-size: 10px 6px;
+  padding: 10px 22px 10px 0;
+  font: inherit;
+  font-size: .82rem;
+  font-weight: 700;
+  color: var(--ink);
+  cursor: pointer;
+}
+.day-filter select:focus-visible { outline: none; }
 
 /* Blocos de categoria */
 .category-section { margin-bottom: 0; }
@@ -286,6 +328,10 @@ a { color: inherit; text-decoration: none; }
   .upload-grid { grid-template-columns: 1fr; }
   .footer-body-grid { grid-template-columns: 1fr; gap: 20px; }
   .footer-bottom { display: block; line-height: 1.8; }
+  .controls { gap: 12px; }
+  .filter-group { width: 100%; }
+  .day-filter { width: 100%; justify-content: space-between; }
+  .day-filter select { flex: 1 1 auto; text-align: right; }
 }
 
 @media (prefers-reduced-motion: reduce) {
