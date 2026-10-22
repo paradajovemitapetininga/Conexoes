@@ -68,17 +68,30 @@
             <input id="search" type="search" placeholder="Buscar curso, professor..." autocomplete="off" />
             <span aria-hidden="true">⌕</span>
           </label>
-          <div class="period-filters" role="group" aria-label="Filtrar por período">
-            <button class="filter-btn is-active" data-period="todos">Todos</button>
-            <button class="filter-btn" data-period="manhã">Manhã</button>
-            <button class="filter-btn" data-period="tarde">Tarde</button>
-            <button class="filter-btn" data-period="noite">Noite</button>
+          <div class="filter-group">
+            <div class="period-filters" role="group" aria-label="Filtrar por período">
+              <button class="filter-btn is-active" data-period="todos">Todos</button>
+              <button class="filter-btn" data-period="manhã">Manhã</button>
+              <button class="filter-btn" data-period="tarde">Tarde</button>
+              <button class="filter-btn" data-period="noite">Noite</button>
+            </div>
+            <div class="day-filter">
+              <label class="day-filter-label" for="day-filter">Dia da semana</label>
+              <select id="day-filter" name="dia-da-semana">
+                <option value="todos">Todos os dias</option>
+                <option value="segunda-feira">Segunda-feira</option>
+                <option value="terça-feira">Terça-feira</option>
+                <option value="quarta-feira">Quarta-feira</option>
+                <option value="quinta-feira">Quinta-feira</option>
+                <option value="sexta-feira">Sexta-feira</option>
+              </select>
+            </div>
           </div>
         </div>
       </div>
 
       <div id="catalog-grid" class="catalog-grid" aria-live="polite"></div>
-      <p id="empty-state" class="empty-state" hidden>Nenhum curso encontrado. Tente outro termo ou período.</p>
+      <p id="empty-state" class="empty-state" hidden>Nenhum curso encontrado. Tente outro termo, dia ou período.</p>
     </section>
     <section id="oficinas-agendamento" class="workshops-section" aria-labelledby="workshops-title">
       <div class="container">
