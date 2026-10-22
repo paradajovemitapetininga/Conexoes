@@ -4,6 +4,16 @@ const STATUS_OVERRIDES = {
 };
 const DEFAULT_STATUS = 'Vagas disponíveis';
 const BOOKING_WORKSHOPS = ['Violino', 'Informática', 'Flauta'];
+const WEEK_DAYS = [
+  {value:'segunda-feira',label:'Segunda-feira',key:'segunda'},
+  {value:'terça-feira',label:'Terça-feira',key:'terca'},
+  {value:'quarta-feira',label:'Quarta-feira',key:'quarta'},
+  {value:'quinta-feira',label:'Quinta-feira',key:'quinta'},
+  {value:'sexta-feira',label:'Sexta-feira',key:'sexta'}
+];
+const DAY_KEY_BY_VALUE = Object.fromEntries(WEEK_DAYS.map(day=>[day.value,day.key]));
+const DAY_ALIASES = {dom:'domingo',domingo:'domingo',seg:'segunda',segunda:'segunda',ter:'terca',terca:'terca',qua:'quarta',quarta:'quarta',qui:'quinta',quinta:'quinta',sex:'sexta',sexta:'sexta',sab:'sabado',sabado:'sabado'};
+const DAY_INDEX = ['domingo','segunda','terca','quarta','quinta','sexta','sabado'];
 
 const courses = [
   ['Teatro','Cultura e Artes','manhã','segunda-feira','8h–9h','Silvina'],['Alongamento Danjeon','Esporte e Lazer','manhã','segunda-feira','8h–9h','Marcos'],['Alongamento','Esporte e Lazer','manhã','quinta-feira','8h30–9h30','Renato'],['Hapkido','Esporte e Lazer','manhã','segunda-feira','9h–10h','Marcos'],['Desenho','Educação e Conhecimento','manhã','quarta-feira','9h–10h','Grazi'],['Musicalização','Educação e Conhecimento','manhã','quinta-feira','9h–10h','Seme'],['Dança / Jazz iniciante','Esporte e Lazer','manhã','quinta-feira','9h30–10h30','Renato'],['Capoeira','Esporte e Lazer','manhã','quarta-feira','10h–11h','Grazi'],['Violão juvenil e adulto iniciante','Educação e Conhecimento','manhã','quinta-feira','10h–11h','Seme'],['Tênis de mesa','Esporte e Lazer','manhã','quarta-feira','10h–12h','Felipe'],['Jazz intermediário','Esporte e Lazer','manhã','quinta-feira','10h30–11h30','Renato'],['Sapateado juvenil e adulto','Cultura e Artes','manhã','quinta-feira','10h45','—'],
@@ -28,6 +38,21 @@ const isBookingWorkshop = (name) => /^(violino|informatica|flauta)(?:\b|$)/i.tes
 function statusFor(course){if(course.status)return course.status;const key=`${slug(course.name)}|${course.period}|${course.day}`;return STATUS_OVERRIDES[key] || DEFAULT_STATUS}
 function statusClass(status){return status.toLowerCase().includes('lotad')?'status-full':status.toLowerCase().includes('últ')?'status-last':'status-open'}
 function escapeHtml(value){return String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]))}
+/* Normaliza o dia do curso (texto, número ou abreviação) para comparar com o filtro. */
+function normalizeDay(value){
+  if(value===null||value===undefined)return '';
+  const text=String(value).normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim().toLowerCase();
+  if(!text)return '';
+  if(/^[0-9]+$/.test(text))return DAY_INDEX[Number(text)]||'';
+  const stem=text.replace(/\s*-\s*feira\b/,'').trim();
+  return DAY_ALIASES[stem]||DAY_ALIASES[text]||text;
+}
+/* Chave do dia selecionado no filtro; string vazia = "Todos os dias". */
+function selectedDay(){
+  const select=document.querySelector('#day-filter');
+  if(!select||!select.value||select.value==='todos')return '';
+  return DAY_KEY_BY_VALUE[select.value]||normalizeDay(select.value);
+}
 function renderBookingWorkshops(){
   const root=document.querySelector('#workshop-list');
   if(!root)return;
@@ -40,7 +65,8 @@ function renderBookingWorkshops(){
 function render(){
   const term=document.querySelector('#search').value.trim().toLowerCase();
   const period=document.querySelector('.filter-btn.is-active')?.dataset.period || 'todos';
-  const filtered=visibleCourses.filter(c=>!isBookingWorkshop(c.name)).filter(c=>{const haystack=[c.name,c.category,c.period,c.day,c.instructor,c.age||''].join(' ').toLowerCase();return (!term||haystack.includes(term))&&(period==='todos'||c.period.includes(period))});
+  const day=selectedDay();
+  const filtered=visibleCourses.filter(c=>!isBookingWorkshop(c.name)).filter(c=>{const haystack=[c.name,c.category,c.period,c.day,c.instructor,c.age||''].join(' ').toLowerCase();return (!term||haystack.includes(term))&&(period==='todos'||c.period.includes(period))&&(!day||normalizeDay(c.day)===day)});
   const root=document.querySelector('#catalog-grid');root.innerHTML='';
   const extraCategories=[...new Set(filtered.map(c=>c.category).filter(category=>category&&!categoryInfo[category]))];
   [...Object.keys(categoryInfo),...extraCategories].forEach(category=>{
@@ -51,6 +77,7 @@ function render(){
   document.querySelector('#empty-state').hidden=filtered.length!==0;
 }
 document.querySelectorAll('.filter-btn').forEach(btn=>btn.addEventListener('click',()=>{document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('is-active'));btn.classList.add('is-active');render()}));
+const dayFilter=document.querySelector('#day-filter');if(dayFilter)dayFilter.addEventListener('change',render);
 document.querySelector('#search').addEventListener('input',render);
 const toggle=document.querySelector('.menu-toggle');toggle.addEventListener('click',()=>{const nav=document.querySelector('#site-nav');const open=nav.classList.toggle('is-open');toggle.setAttribute('aria-expanded',open)});
 document.querySelectorAll('.site-nav a').forEach(a=>a.addEventListener('click',()=>{document.querySelector('#site-nav').classList.remove('is-open');toggle.setAttribute('aria-expanded','false')}));
