@@ -51,9 +51,9 @@ Os textos são descrições gerais das atividades, não currículos da institui�
 
 ## Testes realizados
 
-- `node --test tests/*.test.cjs`: **18 aprovados, 0 falhas**. Inclui consulta/fallback, status explícito, cobertura de 33 nomes, prioridade de fontes, slugs semelhantes, neutralização de oficina desconhecida e exclusão de agendamentos.
+- `node --test tests/*.test.cjs`: **19 aprovados, 0 falhas**. Inclui consulta/fallback, status explícito, cobertura de 33 nomes, prioridade de fontes, slugs semelhantes, neutralização de oficina desconhecida, exclusão de agendamentos e uso da classe visual somente nos templates.
 - `node --check` nos arquivos JavaScript e `git diff --check`: aprovados.
-- Chromium/Playwright: foram acessados pelos links “Saiba mais” todos os **33 slugs elegíveis**; todos carregaram título, descrição e estado de carregamento concluído. Não apareceram mensagens técnicas nem status de vagas não confirmados.
+- Chromium/Playwright: foram acessados pelos links “Saiba mais” todos os **33 slugs elegíveis**; todos carregaram título, descrição e estado de carregamento concluído. Complementos preservam sua grafia original; não apareceram mensagens técnicas nem status de vagas não confirmados.
 - Testes adicionais: atualização do navegador, botão voltar ao catálogo, ID inexistente, oficina inexistente, busca por “xadrez”, filtro noturno, páginas com e sem template e páginas sem status.
 - Viewports desktop de 1280×900 e móvel de 390×844: 66 cards e 3 links de agendamento; sem overflow horizontal. Na amostra móvel e desktop, a disponibilidade não confirmada ficou oculta.
 - Durante o smoke test: 0 erros de página JavaScript, 0 requisições falhas e 0 respostas de erro para arquivos do site.
@@ -71,6 +71,6 @@ Nenhuma alteração de banco foi necessária. A PR permanece aberta para revisã
 
 ## Complemento de validação e publicação
 
-A revisão das descrições resultou em **28 de confiança alta, 4 média e 1 baixa**; essas classificações e as observações por oficina estão na matriz CSV. O segundo smoke test carregou diretamente os 33 detalhes e registrou **0 erros no console, 0 erros de página, 0 requisições falhas e 0 respostas de erro HTTP do site**.
+A revisão das descrições resultou em **28 de confiança alta, 4 média e 1 baixa**; essas classificações e as observações por oficina estão na matriz CSV. O teste final carregou diretamente os 33 detalhes, confirmou a grafia do título “Hapkido” e registrou **0 erros no console, 0 erros de página, 0 requisições falhas e 0 respostas de erro HTTP do site**.
 
 Após o push do commit `bc809cc`, a verificação da Vercel reportou o deployment como concluído. A URL [Preview da branch](https://conexoes-polo1-git-feature-saiba-mais-conexoes-1.vercel.app/) redireciona visitantes sem sessão para o login da Vercel (SSO/proteção do projeto). Portanto, o deployment foi confirmado pela Vercel, mas a inspeção visual diretamente nesse Preview depende de acesso autenticado ao projeto; os testes locais acima cobrem as rotas e viewports solicitados.

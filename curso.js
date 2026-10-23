@@ -120,7 +120,8 @@
     elemento('curso-categoria').textContent = primeiro.category || '';
     elemento('curso-categoria').hidden = !primeiro.category;
     elemento('curso-titulo').textContent = titulo;
-    elemento('curso').classList.toggle('curso-com-template', Boolean(conteudo));
+    const temTemplateVisual = Boolean(conteudo && conteudo.imagem);
+    elemento('curso').classList.toggle('curso-com-template', temTemplateVisual);
 
     const texto = elemento('curso-texto');
     const descricao = String(primeiro.descricao || primeiro.description || '').trim();
