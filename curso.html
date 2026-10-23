@@ -32,7 +32,7 @@
 
   <main id="conteudo" class="pagina-curso-main">
     <div class="container">
-      <p id="curso-aviso" class="curso-aviso" role="status" hidden></p>
+      <p id="curso-aviso" class="curso-aviso" role="status" aria-live="polite">Carregando as informações do curso...</p>
 
       <article id="curso" class="curso" hidden>
         <div class="curso-topo">
@@ -46,7 +46,7 @@
           <p id="curso-categoria" class="curso-categoria" hidden></p>
         </header>
 
-        <div class="curso-apresentacao">
+        <div id="curso-apresentacao" class="curso-apresentacao">
           <div class="curso-apresentacao-texto">
             <p id="curso-texto" class="curso-texto"></p>
             <img class="curso-marca" src="https://res.cloudinary.com/ge9yksty/image/upload/v1790778109/ChatGPT_Image_30_de_set._de_2026__11_19_14-removebg-preview.png" alt="" />
@@ -71,7 +71,7 @@
 
       <section id="curso-inexistente" class="curso-inexistente" hidden>
         <h1>Curso não encontrado</h1>
-        <p>Não localizamos um curso com esse endereço. Ele pode ter mudado de nome ou não fazer parte do catálogo atual.</p>
+        <p>Não localizamos uma oficina com esse endereço. Ela pode ter mudado ou não estar disponível no catálogo. Volte para consultar as oficinas disponíveis.</p>
         <a class="course-more" href="index.html#cursos">Ver todos os cursos</a>
       </section>
     </div>
