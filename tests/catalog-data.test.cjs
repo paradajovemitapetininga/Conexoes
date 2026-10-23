@@ -5,6 +5,10 @@ const vm = require('node:vm');
 const test = require('node:test');
 
 const source = fs.readFileSync(path.join(__dirname, '..', 'dados.js'), 'utf8');
+const indexSource = fs.readFileSync(path.join(__dirname, '..', 'index.html'), 'utf8');
+const appSource = fs.readFileSync(path.join(__dirname, '..', 'app.js'), 'utf8');
+const courseSource = fs.readFileSync(path.join(__dirname, '..', 'curso.js'), 'utf8');
+const courseHtml = fs.readFileSync(path.join(__dirname, '..', 'curso.html'), 'utf8');
 const fixture = {
   id: 41,
   oficina_id: 12,
@@ -28,11 +32,15 @@ const fixture = {
 
 function createContext({ withClient = true, data = [fixture], error = null } = {}) {
   const calls = [];
-  const warnings = [];
+  const logs = { warn: [], info: [], error: [] };
   const context = {
     window: {},
     row: fixture,
-    console: { error() {}, warn(...args) { warnings.push(args); } }
+    console: {
+      error(...args) { logs.error.push(args); },
+      warn(...args) { logs.warn.push(args); },
+      info(...args) { logs.info.push(args); }
+    }
   };
   if (withClient) {
     context.window.supabase = {
@@ -55,7 +63,7 @@ function createContext({ withClient = true, data = [fixture], error = null } = {
   }
   vm.createContext(context);
   vm.runInContext(source, context, { filename: 'dados.js' });
-  return { context, calls, warnings };
+  return { context, calls, logs };
 }
 
 test('normaliza oficina com ID, descrição, categoria, idade e status do esquema atual', () => {
@@ -103,6 +111,26 @@ test('status de indisponibilidade recebe classe visual de vagas esgotadas', () =
   assert.equal(vm.runInContext("statusClass('Sem vagas')", context), 'status-full');
   assert.equal(vm.runInContext("statusClass('Indisponível')", context), 'status-full');
   assert.equal(vm.runInContext("statusClass('Últimas vagas')", context), 'status-last');
+  assert.equal(vm.runInContext("statusClass('')", context), '');
+});
+
+test('fallback local não presume vagas disponíveis sem um status confirmado', () => {
+  const { context } = createContext();
+  assert.equal(vm.runInContext('DEFAULT_STATUS', context), '');
+  assert.equal(vm.runInContext('courses.every(course => !course.status && statusFor(course) === "")', context), true);
+  assert.match(appSource, /const statusBadge=status\?/);
+  assert.match(courseSource, /temStatus \? 'Vagas' : 'Professores'/);
+});
+
+test('status de vagas explicitamente recebido do banco ou de override continua preservado', () => {
+  const { context } = createContext();
+  context.course = { name: 'Capoeira', period: 'manhã', day: 'segunda-feira' };
+  assert.equal(vm.runInContext('statusFor(course)', context), '');
+  context.course.status = 'Últimas vagas';
+  assert.equal(vm.runInContext('statusFor(course)', context), 'Últimas vagas');
+  context.course.status = '';
+  vm.runInContext("STATUS_OVERRIDES['capoeira|manhã|segunda-feira'] = 'Sem vagas'", context);
+  assert.equal(vm.runInContext('statusFor(course)', context), 'Sem vagas');
 });
 
 test('consulta usa apenas colunas e relações confirmadas e filtra horários/oficinas ativos', async () => {
@@ -110,6 +138,7 @@ test('consulta usa apenas colunas e relações confirmadas e filtra horários/of
   const result = await vm.runInContext('buscarHorarios()', context);
   assert.equal(result.origem, 'supabase');
   assert.equal(result.cursos.length, 1);
+  assert.equal('aviso' in result, false);
   assert.ok(calls.some(call => call[0] === 'from' && call[1] === 'horarios'));
   assert.ok(calls.some(call => call[0] === 'eq' && call[1] === 'ativo' && call[2] === true));
   assert.ok(calls.some(call => call[0] === 'eq' && call[1] === 'oficinas.ativo' && call[2] === true));
@@ -120,25 +149,38 @@ test('consulta usa apenas colunas e relações confirmadas e filtra horários/of
 });
 
 test('usa fallback local quando o cliente Supabase não está disponível', async () => {
-  const { context } = createContext({ withClient: false });
+  const { context, logs } = createContext({ withClient: false });
   const result = await vm.runInContext('buscarHorarios()', context);
   assert.equal(result.origem, 'local');
   assert.ok(result.cursos.length > 0);
-  assert.match(result.aviso, /catálogo de referência local/i);
+  assert.equal('aviso' in result, false);
+  assert.match(logs.warn[0][0], /Cliente Supabase indisponível/i);
 });
 
 test('usa fallback local quando a consulta do Supabase retorna erro', async () => {
-  const { context } = createContext({ error: { message: 'RLS/consulta indisponível' } });
+  const { context, logs } = createContext({ error: { message: 'RLS/consulta indisponível' } });
   const result = await vm.runInContext('buscarHorarios()', context);
   assert.equal(result.origem, 'local');
   assert.ok(result.cursos.length > 0);
-  assert.match(result.aviso, /não foi possível consultar/i);
+  assert.equal('aviso' in result, false);
+  assert.match(logs.error[0][0], /Falha ao carregar horários do Supabase/i);
 });
 
 test('usa fallback local quando Supabase responde sem horários ativos', async () => {
-  const { context } = createContext({ data: [] });
+  const { context, logs } = createContext({ data: [] });
   const result = await vm.runInContext('buscarHorarios()', context);
   assert.equal(result.origem, 'local');
   assert.ok(result.cursos.length > 0);
-  assert.match(result.aviso, /não há horários públicos visíveis/i);
+  assert.equal('aviso' in result, false);
+  assert.match(logs.info[0][0], /não retornou horários ativos/i);
+});
+
+test('não há aviso técnico de origem no catálogo e os estados úteis permanecem', () => {
+  assert.doesNotMatch(indexSource, /catalog-source-message/);
+  assert.doesNotMatch(appSource, /setSourceMessage|resultado\.aviso/);
+  assert.doesNotMatch(courseSource, /resultado\.aviso|mostrarAviso\(/);
+  assert.match(courseSource, /console\.error\('Falha ao buscar horários do Supabase:/);
+  assert.match(courseHtml, /Carregando as informações do curso/);
+  assert.match(courseHtml, /Não localizamos uma oficina com esse endereço/);
+  assert.match(indexSource, /id="empty-state"[^>]*>Nenhum curso encontrado/);
 });

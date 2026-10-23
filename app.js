@@ -61,9 +61,10 @@ function render(){
       const status=statusFor(c);
       const detailUrl=courseDetailsUrl(c);
       const more=detailUrl?`<div class="course-card-acao"><a class="course-more" aria-label="Saiba mais sobre ${escapeHtml(c.name)}" href="${detailUrl}">Saiba mais<span aria-hidden="true">&nbsp;→</span></a></div>`:'';
+      const statusBadge=status?`<span class="status ${statusClass(status)}">${escapeHtml(status)}</span>`:'';
       const card=document.createElement('article');
       card.className='course-card';
-      card.innerHTML=`<div class="course-top"><div><h4>${escapeHtml(c.name)}</h4><dl><dt>Dia:</dt> <dd>${escapeHtml(c.day)}</dd><br><dt>Horário:</dt> <dd>${escapeHtml(c.time)}</dd><br><dt>Professor:</dt> <dd>${escapeHtml(c.instructor)}</dd></dl></div><span class="status ${statusClass(status)}">${escapeHtml(status)}</span></div><div class="meta-row">${c.age?`<span class="tag">${escapeHtml(c.age)}</span>`:''}<span class="tag">${escapeHtml(c.period)}</span></div>${more}`;
+      card.innerHTML=`<div class="course-top"><div><h4>${escapeHtml(c.name)}</h4><dl><dt>Dia:</dt> <dd>${escapeHtml(c.day)}</dd><br><dt>Horário:</dt> <dd>${escapeHtml(c.time)}</dd><br><dt>Professor:</dt> <dd>${escapeHtml(c.instructor)}</dd></dl></div>${statusBadge}</div><div class="meta-row">${c.age?`<span class="tag">${escapeHtml(c.age)}</span>`:''}<span class="tag">${escapeHtml(c.period)}</span></div>${more}`;
       list.appendChild(card);
     });root.appendChild(section);
   });
@@ -80,12 +81,9 @@ applyBrand();applyCampus();
 renderBookingWorkshops();
 render();
 
-const sourceMessage = document.querySelector('#catalog-source-message');
-function setSourceMessage(message){if(!sourceMessage)return;sourceMessage.textContent=message;sourceMessage.hidden=!message}
 async function carregarCursos(){
   const resultado=await buscarHorarios();
   visibleCourses=resultado.cursos;
-  setSourceMessage(resultado.origem==='local'?resultado.aviso:'');
   render();
 }
 
