@@ -51,13 +51,21 @@ function render(){
   const term=document.querySelector('#search').value.trim().toLowerCase();
   const period=document.querySelector('.filter-btn.is-active')?.dataset.period || 'todos';
   const day=selectedDay();
-  const filtered=visibleCourses.filter(c=>!isBookingWorkshop(c.name)).filter(c=>{const haystack=[c.name,c.category,c.period,c.day,c.instructor,c.age||''].join(' ').toLowerCase();return (!term||haystack.includes(term))&&(period==='todos'||c.period.includes(period))&&(!day||normalizeDay(c.day)===day)});
+  const filtered=visibleCourses.filter(c=>!isBookingWorkshop(c)).filter(c=>{const haystack=[c.name,c.category,c.period,c.day,c.instructor,c.age||''].join(' ').toLowerCase();return (!term||haystack.includes(term))&&(period==='todos'||c.period.includes(period))&&(!day||normalizeDay(c.day)===day)});
   const root=document.querySelector('#catalog-grid');root.innerHTML='';
   const extraCategories=[...new Set(filtered.map(c=>c.category).filter(category=>category&&!categoryInfo[category]))];
   [...Object.keys(categoryInfo),...extraCategories].forEach(category=>{
     const items=filtered.filter(c=>c.category===category); if(!items.length)return;
     const info=categoryInfo[category]||{className:'education',icon:'✦'};const section=document.createElement('section');section.className=`category-section category-${info.className}`;section.innerHTML=`<div class="category-head"><div><h3>${escapeHtml(category)}</h3><p>${items.length} ${items.length===1?'horário':'horários'} encontrados</p></div></div><div class="course-list"></div>`;
-    const list=section.querySelector('.course-list');items.forEach(c=>{const status=statusFor(c);const card=document.createElement('article');card.className='course-card';card.innerHTML=`<div class="course-top"><div><h4>${escapeHtml(c.name)}</h4><dl><dt>Dia:</dt> <dd>${escapeHtml(c.day)}</dd><br><dt>Horário:</dt> <dd>${escapeHtml(c.time)}</dd><br><dt>Professor:</dt> <dd>${escapeHtml(c.instructor)}</dd></dl></div><span class="status ${statusClass(status)}">${escapeHtml(status)}</span></div><div class="meta-row">${c.age?`<span class="tag">${escapeHtml(c.age)}</span>`:''}<span class="tag">${escapeHtml(c.period)}</span></div><div class="course-card-acao"><a class="course-more" href="curso.html?c=${encodeURIComponent(courseSlug(c))}">Saiba mais<span aria-hidden="true">&nbsp;→</span></a></div>`;list.appendChild(card)});root.appendChild(section);
+    const list=section.querySelector('.course-list');items.forEach(c=>{
+      const status=statusFor(c);
+      const detailUrl=courseDetailsUrl(c);
+      const more=detailUrl?`<div class="course-card-acao"><a class="course-more" aria-label="Saiba mais sobre ${escapeHtml(c.name)}" href="${detailUrl}">Saiba mais<span aria-hidden="true">&nbsp;→</span></a></div>`:'';
+      const card=document.createElement('article');
+      card.className='course-card';
+      card.innerHTML=`<div class="course-top"><div><h4>${escapeHtml(c.name)}</h4><dl><dt>Dia:</dt> <dd>${escapeHtml(c.day)}</dd><br><dt>Horário:</dt> <dd>${escapeHtml(c.time)}</dd><br><dt>Professor:</dt> <dd>${escapeHtml(c.instructor)}</dd></dl></div><span class="status ${statusClass(status)}">${escapeHtml(status)}</span></div><div class="meta-row">${c.age?`<span class="tag">${escapeHtml(c.age)}</span>`:''}<span class="tag">${escapeHtml(c.period)}</span></div>${more}`;
+      list.appendChild(card);
+    });root.appendChild(section);
   });
   document.querySelector('#empty-state').hidden=filtered.length!==0;
 }
@@ -81,7 +89,4 @@ async function carregarCursos(){
   render();
 }
 
-applyBrand();
-applyCampus();
-render();
 carregarCursos();

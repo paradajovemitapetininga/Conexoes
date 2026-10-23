@@ -1,5 +1,5 @@
 /* =============================================================================
-   curso.js — página individual de curso (curso.html?c=<slug>)
+   curso.js — página individual de curso (curso.html?id=<id> ou ?c=<slug>)
    -----------------------------------------------------------------------------
    Lê o parâmetro "c", agrupa todos os horários reais daquele curso e monta a
    página. Cursos que têm template em curso-conteudo.js ganham foto, texto e
@@ -11,6 +11,8 @@
 
   const ORDEM_PERIODOS = ['manhã', 'tarde', 'noite'];
   const parametros = new URLSearchParams(window.location.search);
+  const temId = parametros.has('id');
+  const idSolicitado = (parametros.get('id') || '').trim();
   const alvo = (parametros.get('c') || '').trim().toLowerCase();
 
   const elemento = (id) => document.querySelector('#' + id);
@@ -118,8 +120,10 @@
     elemento('curso').classList.toggle('curso-com-template', Boolean(conteudo));
 
     const texto = elemento('curso-texto');
-    if (conteudo && conteudo.texto) {
-      texto.textContent = conteudo.texto;
+    const descricao = String(primeiro.descricao || primeiro.description || '').trim();
+    const textoApresentacao = descricao || (conteudo && conteudo.texto) || '';
+    if (textoApresentacao) {
+      texto.textContent = textoApresentacao;
       texto.hidden = false;
     } else {
       texto.textContent = '';
@@ -128,14 +132,23 @@
 
     const blocoFoto = elemento('curso-foto-bloco');
     const foto = elemento('curso-foto');
+    const apresentacao = elemento('curso-apresentacao');
     if (conteudo && conteudo.imagem) {
+      foto.onerror = () => {
+        console.warn(`Imagem de template não encontrada: ${conteudo.imagem}`);
+        blocoFoto.hidden = true;
+        apresentacao.classList.add('curso-apresentacao-sem-imagem');
+      };
       foto.src = conteudo.imagem;
       foto.alt = conteudo.alt || '';
       blocoFoto.hidden = false;
     } else {
+      foto.onerror = null;
       foto.removeAttribute('src');
       blocoFoto.hidden = true;
     }
+    apresentacao.classList.toggle('curso-apresentacao-sem-imagem', blocoFoto.hidden);
+    apresentacao.hidden = !textoApresentacao && !(conteudo && conteudo.imagem);
 
     const cores = (conteudo && conteudo.cores) || {
       destaque: '#0d4d70',
@@ -153,7 +166,8 @@
 
   /* --- Inicialização ------------------------------------------------------ */
   async function iniciar() {
-    if (!alvo) {
+    if ((temId && !/^[1-9]\d*$/.test(idSolicitado)) || (!temId && !alvo)) {
+      mostrarAviso('');
       mostrarNaoEncontrado();
       return;
     }
@@ -165,14 +179,14 @@
       resultado = { cursos: courses, origem: 'local', aviso: '' };
     }
 
-    const horarios = (resultado.cursos || []).filter(curso => courseSlug(curso) === alvo);
+    mostrarAviso(resultado.origem === 'local' ? resultado.aviso : '');
+    const horarios = filtrarHorariosDoCurso(resultado.cursos || [], idSolicitado, alvo, temId);
     if (!horarios.length) {
       mostrarNaoEncontrado();
       return;
     }
 
-    mostrarAviso(resultado.origem === 'local' ? resultado.aviso : '');
-    render(horarios, buscarConteudoCurso(alvo));
+    render(horarios, buscarConteudoCurso(courseSlug(horarios[0])));
   }
 
   /* Menu mobile (mesmo comportamento da página inicial). */
