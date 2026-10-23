@@ -1,0 +1,6 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "rewrites": [
+    { "source": "/cursos/:slug", "destination": "/curso.html?c=:slug" }
+  ]
+}

@@ -337,3 +337,201 @@ a { color: inherit; text-decoration: none; }
 @media (prefers-reduced-motion: reduce) {
   .campus-photo, .workshop-link { transition: none; }
 }
+
+/* =============================================================================
+   Aviso de origem dos dados (catálogo)
+   ============================================================================= */
+.catalog-source-message {
+  max-width: 1180px;
+  margin: 0 auto 18px;
+  padding: 12px 18px;
+  border-radius: 10px;
+  background: #fff;
+  border-left: 5px solid var(--orange);
+  box-shadow: 0 4px 14px rgba(18, 48, 71, .08);
+  color: var(--ink);
+  font-size: .82rem;
+  font-weight: 600;
+}
+
+/* =============================================================================
+   Link "Saiba mais" nos cards do catálogo
+   ============================================================================= */
+.course-card { display: flex; flex-direction: column; }
+.course-card .course-top { flex: none; }
+.course-card-acao { margin-top: auto; padding-top: 16px; }
+.course-more {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: 999px;
+  padding: 9px 16px;
+  background: var(--blue);
+  color: #fff;
+  font-size: .8rem;
+  font-weight: 700;
+  transition: background .2s, transform .2s, box-shadow .2s;
+}
+.course-more:hover, .course-more:focus-visible {
+  background: var(--blue-2);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 14px rgba(13, 77, 112, .25);
+}
+.course-more:focus-visible { outline: 2px solid var(--orange); outline-offset: 2px; }
+
+/* =============================================================================
+   Página de curso (curso.html)
+   ============================================================================= */
+.pagina-curso { background: #eef2f4; }
+.pagina-curso-main { padding: 26px 0 64px; }
+
+.curso {
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 14px 40px rgba(13, 77, 112, .10);
+  overflow: hidden;
+  --destaque-curso: var(--orange);
+}
+
+.curso-topo { padding: 18px 22px 0; }
+.curso-cabecalho { text-align: center; padding: 10px 24px 4px; }
+.curso-voltar {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: .82rem;
+  font-weight: 700;
+  color: var(--muted);
+  transition: color .2s;
+}
+.curso-voltar:hover, .curso-voltar:focus-visible { color: var(--orange); }
+.curso-sobretitulo {
+  margin: 16px 0 0;
+  font-size: .78rem;
+  font-weight: 800;
+  letter-spacing: .24em;
+  text-transform: uppercase;
+  color: var(--destaque-curso);
+}
+.curso-titulo {
+  margin: 6px 0 0;
+  font-family: 'Baloo 2', 'Trebuchet MS', ui-rounded, system-ui, sans-serif;
+  font-weight: 800;
+  font-size: clamp(2.1rem, 6vw, 3.3rem);
+  line-height: 1.05;
+  letter-spacing: -.02em;
+  color: var(--ink);
+}
+.curso-com-template .curso-titulo { text-transform: uppercase; }
+.curso-categoria {
+  display: inline-block;
+  margin: 14px 0 0;
+  padding: 5px 13px;
+  border-radius: 999px;
+  background: #edf5f8;
+  background: color-mix(in srgb, var(--destaque-curso) 16%, #fff);
+  color: var(--ink);
+  font-size: .72rem;
+  font-weight: 800;
+}
+
+.curso-apresentacao {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 28px;
+  align-items: start;
+  padding: 22px 24px 30px;
+}
+.curso-texto { margin: 0; font-size: .95rem; line-height: 1.65; color: var(--ink); }
+.curso-marca { display: block; width: 132px; height: auto; margin-top: 20px; }
+.curso-foto-bloco { margin: 0; }
+.curso-foto {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 14px;
+  box-shadow: 0 10px 26px rgba(18, 48, 71, .16);
+}
+
+.curso-horarios { border-top: 1px solid var(--line); padding: 26px 24px 44px; }
+.curso-secao-titulo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin: 0 0 30px;
+  font-size: clamp(1.35rem, 3.6vw, 1.95rem);
+  font-weight: 800;
+  letter-spacing: -.01em;
+  color: var(--ink);
+}
+.curso-calendario { width: 34px; height: 34px; flex: none; color: var(--ink); }
+
+.curso-paineis { display: grid; grid-template-columns: 1fr 1fr; gap: 26px; }
+.curso-painel-coluna { display: flex; flex-direction: column; gap: 24px; }
+.curso-painel {
+  position: relative;
+  background: var(--painel-fundo, #dfe7ec);
+  border-radius: 14px;
+  padding: 32px 18px 20px;
+}
+.curso-painel-pill {
+  position: absolute;
+  top: -15px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--painel-destaque, var(--blue));
+  color: #fff;
+  font-size: .9rem;
+  font-weight: 700;
+  padding: 7px 26px;
+  border-radius: 999px;
+  white-space: nowrap;
+  box-shadow: 0 6px 14px rgba(18, 48, 71, .18);
+}
+.curso-painel-corpo { display: flex; flex-direction: column; gap: 10px; }
+.curso-painel-card { background: #fff; border-radius: 12px; padding: 15px 14px; text-align: center; }
+.curso-painel-card p { margin: 2px 0; font-size: .86rem; color: var(--ink); }
+.curso-painel-card strong { font-weight: 800; }
+
+.curso-aviso {
+  margin: 0 0 18px;
+  padding: 12px 18px;
+  border-radius: 10px;
+  background: #fff2c7;
+  border-left: 5px solid #c0790c;
+  color: #6b5100;
+  font-size: .82rem;
+  font-weight: 600;
+}
+
+.curso-inexistente {
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 14px 40px rgba(13, 77, 112, .10);
+  padding: 56px 28px;
+  text-align: center;
+}
+.curso-inexistente h1 { margin: 0 0 10px; font-size: clamp(1.6rem, 4vw, 2.2rem); color: var(--blue); letter-spacing: -.02em; }
+.curso-inexistente p { margin: 0 auto 24px; max-width: 460px; color: var(--muted); }
+.curso-inexistente .course-more { text-decoration: none; }
+
+@media (max-width: 760px) {
+  /* O template mantém texto/foto e os dois painéis lado a lado, como no mockup. */
+  .curso-apresentacao { gap: 16px; padding: 18px 18px 26px; }
+  .curso-texto { font-size: .82rem; line-height: 1.6; }
+  .curso-paineis { gap: 16px; }
+  .curso-painel { padding: 28px 12px 16px; }
+  .curso-painel-card { padding: 13px 10px; }
+  .curso-painel-card p { font-size: .78rem; }
+  .curso-painel-pill { font-size: .82rem; padding: 6px 18px; }
+  .curso-horarios { padding: 22px 18px 38px; }
+  .curso-marca { width: 104px; }
+  .curso-categoria { font-size: .68rem; }
+}
+
+@media (max-width: 420px) {
+  .curso-paineis { grid-template-columns: 1fr; gap: 28px; }
+  .curso-painel-card p { font-size: .84rem; }
+  .curso-painel-pill { font-size: .88rem; padding: 7px 24px; }
+}
