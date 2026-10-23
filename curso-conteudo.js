@@ -10,7 +10,7 @@ const CURSO_CONTEUDO = {
   'alongamento': {
     titulo: 'Alongamento',
     texto: 'O curso de Alongamento, com o professor Renato, desenvolve a flexibilidade, a mobilidade articular e a postura corporal, promovendo o equilíbrio, a redução do estresse e o bem-estar físico e mental. As aulas são ideais para liberar tensões diárias e revitalizar a energia do corpo.',
-    imagem: 'assets/cursos/alongamento.jpg',
+    imagem: 'assets/cursos/alongamento.svg',
     alt: 'Participante executando um alongamento em uma sala de dança.',
     cores: {
       destaque: '#8a9a70',
@@ -23,7 +23,7 @@ const CURSO_CONTEUDO = {
   'capoeira': {
     titulo: 'Capoeira',
     texto: 'O curso de Capoeira, com a professora Grazi, desenvolve a agilidade, a coordenação motora, o ritmo e a expressão cultural através da ginga e dos movimentos característicos. As aulas estimulam a disciplina, a socialização e o bem-estar físico e mental.',
-    imagem: 'assets/cursos/capoeira.jpg',
+    imagem: 'assets/cursos/capoeira.svg',
     alt: 'Grupo de capoeira durante uma roda, com alunos de RDC junto à capoeira.',
     cores: {
       destaque: '#295d47',
@@ -36,7 +36,7 @@ const CURSO_CONTEUDO = {
   'jazz-intermediario': {
     titulo: 'Jazz Intermediário',
     texto: 'O curso de Jazz Intermediário, com o professor Renato, é voltado para quem já possui vivência na dança e busca aprimorar sua técnica, musicalização e expressão artística. As aulas exploram coreografias dinâmicas, giros, saltos e a expressividade característica do jazz, promovendo o desenvolvimento técnico, a flexibilidade e a consciência corporal.',
-    imagem: 'assets/cursos/jazz-intermediario.jpg',
+    imagem: 'assets/cursos/jazz-intermediario.svg',
     alt: 'Bailarina executando um salto no meio de uma aula de jazz.',
     cores: {
       destaque: '#366177',
@@ -49,7 +49,7 @@ const CURSO_CONTEUDO = {
   'tenis-de-mesa': {
     titulo: 'Tênis de Mesa',
     texto: 'O curso de Tênis de Mesa, com o professor Felipe, ensina técnicas e regras da modalidade, desenvolvendo agilidade, coordenação motora, foco e reflexos rápidos. As aulas promovem o espírito esportivo, a concentração e a saúde física, sendo ideal para todas as idades e estimulando o desenvolvimento pessoal de cada aluno.',
-    imagem: 'assets/cursos/tenis-de-mesa.jpg',
+    imagem: 'assets/cursos/tenis-de-mesa.svg',
     alt: 'Aluno jogando tênis de mesa em uma mesa oficial.',
     cores: {
       destaque: '#3e5975',
