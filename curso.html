@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0d4d70" />
+  <meta name="description" content="Detalhes do curso, dias, horários, professores e vagas do Conexões Polo 1 em Itapetininga." />
+  <link rel="icon" type="image/x-icon" href="https://res.cloudinary.com/ge9yksty/image/upload/v1790778059/ChatGPT_Image_30_de_set._de_2026_11_20_00.png">
+  <title>Curso — Conexões Polo 1</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&display=swap" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body class="pagina-curso">
+  <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
+
+  <header class="site-header">
+    <div class="container nav-wrap">
+      <a class="brand" href="index.html" aria-label="Conexões Polo 1, início">
+        <img class="site-logo" id="custom-logo" src="https://res.cloudinary.com/ge9yksty/image/upload/v1790778109/ChatGPT_Image_30_de_set._de_2026__11_19_14-removebg-preview.png" alt="Conexões — um programa para todos" />
+      </a>
+      <button class="menu-toggle" aria-expanded="false" aria-controls="site-nav">Menu</button>
+      <nav id="site-nav" class="site-nav" aria-label="Navegação principal">
+        <a href="index.html#sobre">Sobre</a>
+        <a href="index.html#cursos">Cursos</a>
+        <a href="index.html#oficinas-agendamento">Oficinas</a>
+        <a href="index.html#contato">Contato</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="conteudo" class="pagina-curso-main">
+    <div class="container">
+      <p id="curso-aviso" class="curso-aviso" role="status" hidden></p>
+
+      <article id="curso" class="curso" hidden>
+        <div class="curso-topo">
+          <a class="curso-voltar" href="index.html#cursos">
+            <span aria-hidden="true">←</span> Voltar para o catálogo
+          </a>
+        </div>
+        <header class="curso-cabecalho">
+          <p id="curso-sobretitulo" class="curso-sobretitulo" hidden></p>
+          <h1 id="curso-titulo" class="curso-titulo"></h1>
+          <p id="curso-categoria" class="curso-categoria" hidden></p>
+        </header>
+
+        <div class="curso-apresentacao">
+          <div class="curso-apresentacao-texto">
+            <p id="curso-texto" class="curso-texto"></p>
+            <img class="curso-marca" src="https://res.cloudinary.com/ge9yksty/image/upload/v1790778109/ChatGPT_Image_30_de_set._de_2026__11_19_14-removebg-preview.png" alt="" />
+          </div>
+          <figure id="curso-foto-bloco" class="curso-foto-bloco" hidden>
+            <img id="curso-foto" class="curso-foto" src="" alt="" />
+          </figure>
+        </div>
+
+        <section class="curso-horarios" aria-labelledby="curso-horarios-titulo">
+          <h2 id="curso-horarios-titulo" class="curso-secao-titulo">
+            <svg class="curso-calendario" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <rect x="3" y="5" width="18" height="16" rx="3" fill="none" stroke="currentColor" stroke-width="1.8" />
+              <path d="M3 10h18M8 3v4M16 3v4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+              <path d="M7.5 14h2M11 14h2M14.5 14h2M7.5 17.5h2M11 17.5h2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+            </svg>
+            Dias e Horários
+          </h2>
+          <div id="curso-paineis" class="curso-paineis"></div>
+        </section>
+      </article>
+
+      <section id="curso-inexistente" class="curso-inexistente" hidden>
+        <h1>Curso não encontrado</h1>
+        <p>Não localizamos um curso com esse endereço. Ele pode ter mudado de nome ou não fazer parte do catálogo atual.</p>
+        <a class="course-more" href="index.html#cursos">Ver todos os cursos</a>
+      </section>
+    </div>
+  </main>
+
+  <footer id="contato" class="site-footer">
+    <div class="container footer-content">
+      <div class="footer-top-text">
+        <h2>Conexões – Polo 1</h2>
+        <p class="footer-title">Entre em contato conosco</p>
+      </div>
+      <div class="footer-body-grid">
+        <div class="footer-info">
+          <p>Tem dúvidas sobre as atividades, inscrições ou horários? Entre em contato com o Conexões – Polo 1.</p>
+          <p><strong>WhatsApp:</strong> <a href="https://wa.me/551533731002">(15) 3373-1002</a></p>
+          <p><strong>Atendimento:</strong> Conexões – Polo 1, Itapetininga – SP</p>
+          <p><strong>Instagram:</strong> @conexoes1.itape</p>
+        </div>
+        <div class="footer-schedule">
+          <h2>Atendimento</h2>
+          <p>Segunda a sexta-feira<br />Das 8h às 20h<br /><span class="footer-muted">Exceto feriados.</span></p>
+        </div>
+        <div class="footer-brand-box">
+          <a class="brand brand-light" href="index.html">
+            <img class="site-logo footer-logo" src="https://res.cloudinary.com/ge9yksty/image/upload/v1790776288/Conex%C3%B5es-removebg-preview.png" alt="Conexões — um programa para todos" />
+          </a>
+        </div>
+      </div>
+    </div>
+    <div class="container footer-bottom">
+      <span>© 2026 Conexões Polo 1</span>
+      <span>Informação sujeita à atualização pela instituição.</span>
+    </div>
+  </footer>
+
+  <script src="dados.js" defer></script>
+  <script src="curso-conteudo.js" defer></script>
+  <script src="curso.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</body>
+</html>
