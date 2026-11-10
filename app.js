@@ -72,12 +72,12 @@ applyBrand();applyCampus();
 renderBookingWorkshops();
 render();
 
-const sourceMessage = document.querySelector('#catalog-source-message');
-function setSourceMessage(message){if(!sourceMessage)return;sourceMessage.textContent=message;sourceMessage.hidden=!message}
+/* O aviso de origem dos dados não é exibido ao visitante: o catálogo local de
+   referência aparece normalmente e o diagnóstico fica no console. */
 async function carregarCursos(){
   const resultado=await buscarHorarios();
   visibleCourses=resultado.cursos;
-  setSourceMessage(resultado.origem==='local'?resultado.aviso:'');
+  if(resultado.origem==='local')console.info('Catálogo de referência local em uso:',resultado.aviso);
   render();
 }
 
