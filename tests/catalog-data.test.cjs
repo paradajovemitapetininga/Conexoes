@@ -154,7 +154,8 @@ test('usa fallback local quando o cliente Supabase não está disponível', asyn
   assert.equal(result.origem, 'local');
   assert.ok(result.cursos.length > 0);
   assert.equal('aviso' in result, false);
-  assert.match(logs.warn[0][0], /Cliente Supabase indisponível/i);
+  assert.equal(logs.warn.length, 0);
+  assert.match(logs.info[0][0], /Cliente Supabase indisponível/i);
 });
 
 test('usa fallback local quando a consulta do Supabase retorna erro', async () => {

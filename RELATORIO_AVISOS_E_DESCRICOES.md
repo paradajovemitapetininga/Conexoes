@@ -15,7 +15,7 @@ A auditoria encontrou também um valor padrão que apresentava **“Vagas dispon
 
 A consulta pública inspecionada não retornou horários ativos do Supabase; o catálogo continuou carregando a lista de referência local. Não foi identificada uma falha técnica de conexão que justificasse desativar a integração, e o banco não foi alterado.
 
-Foram retiradas do DOM e da renderização pública as mensagens técnicas de origem do catálogo e do detalhe. Os diagnósticos continuam no console: aviso quando o cliente Supabase não está disponível, informação quando a consulta não retorna horários ativos e erro quando uma consulta falha. O fallback local e o tratamento de erros permanecem ativos. Não houve ocultação de erro por CSS.
+Foram retiradas do DOM e da renderização pública as mensagens técnicas de origem do catálogo e do detalhe. Quando o cliente Supabase não está disponível, a informação de fallback é registrada com `console.info`, sem gerar `console.warn`. Consulta sem horários ativos também fica no nível informativo; erros reais de consulta continuam registrados com `console.error`. O fallback local permanece ativo. Não houve ocultação de erro por CSS.
 
 Foram mantidos o estado acessível de carregamento, a mensagem útil de “nenhum curso encontrado”, o estado de oficina não encontrada e o acesso às opções de agendamento por WhatsApp. A mensagem de página não encontrada foi reformulada para orientar o visitante de volta ao catálogo.
 

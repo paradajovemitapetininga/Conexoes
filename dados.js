@@ -157,7 +157,7 @@ function normalizarHorario(row) {
    - origem: 'supabase' | 'local' (diagnóstico interno; não exibir na interface). */
 async function buscarHorarios() {
   if (!window.supabase || !window.supabase.createClient) {
-    console.warn('Cliente Supabase indisponível; usando o catálogo local de referência.');
+    console.info('Cliente Supabase indisponível; usando o catálogo local de referência.');
     return { cursos: courses, origem: 'local' };
   }
   try {
