@@ -18,11 +18,9 @@
   const elemento = (id) => document.querySelector('#' + id);
 
   /* --- Montagem da página ------------------------------------------------- */
-  function mostrarAviso(mensagem) {
-    const aviso = elemento('curso-aviso');
-    if (!aviso) return;
-    aviso.textContent = mensagem || '';
-    aviso.hidden = !mensagem;
+  function finalizarCarregamento() {
+    const estado = elemento('curso-aviso');
+    if (estado) estado.hidden = true;
   }
 
   function mostrarNaoEncontrado() {
@@ -62,15 +60,17 @@
   }
 
   function cartaoVaga(horario) {
-    const status = statusFor(horario);
+    const status = String(statusFor(horario) || '').trim();
     const periodo = String(horario.period || '').toLowerCase();
-    const rotuloStatus = status === DEFAULT_STATUS && periodo
+    const rotuloStatus = status && status === DEFAULT_STATUS && periodo
       ? `${status} pela ${periodo}`
       : status;
+    const disponibilidade = status ? `<p>${escapeHtml(rotuloStatus)}</p>` : '';
     const professor = horario.instructor && horario.instructor !== '—'
       ? `<p><strong>Professor:</strong> ${escapeHtml(horario.instructor)}</p>`
       : '';
-    return `<div class="curso-painel-card"><p>${escapeHtml(rotuloStatus)}</p>${professor}</div>`;
+    if (!disponibilidade && !professor) return '';
+    return `<div class="curso-painel-card">${disponibilidade}${professor}</div>`;
   }
 
   function painel(classes, rotulo, fundo, destaque, conteudo) {
@@ -90,16 +90,19 @@
       grupo.itens.map(cartaoHorario).join('')
     )).join('');
 
-    const colunaVagas = painel(
-      'curso-painel-vagas',
-      'Vagas',
-      cores.vagas,
-      cores.vagasDestaque,
-      horarios.map(cartaoVaga).join('')
-    );
+    const temStatus = horarios.some(horario => Boolean(statusFor(horario)));
+    const temProfessor = horarios.some(horario => horario.instructor && horario.instructor !== '—');
+    const colunaInformacoes = temStatus || temProfessor
+      ? `<div class="curso-painel-coluna">${painel(
+          temStatus ? 'curso-painel-vagas' : 'curso-painel-professores',
+          temStatus ? 'Vagas' : 'Professores',
+          cores.vagas,
+          cores.vagasDestaque,
+          horarios.map(cartaoVaga).join('')
+        )}</div>`
+      : '';
 
-    return `<div class="curso-painel-coluna">${colunaPeriodos}</div>
-            <div class="curso-painel-coluna">${colunaVagas}</div>`;
+    return `<div class="curso-painel-coluna">${colunaPeriodos}</div>${colunaInformacoes}`;
   }
 
   function render(horarios, conteudo) {
@@ -157,7 +160,9 @@
       vagasDestaque: '#0d4d70'
     };
     elemento('curso').style.setProperty('--destaque-curso', cores.destaque);
-    elemento('curso-paineis').innerHTML = montarPaineis(horarios, cores);
+    const paineis = elemento('curso-paineis');
+    paineis.classList.toggle('curso-paineis-uma-coluna', !horarios.some(horario => Boolean(statusFor(horario))));
+    paineis.innerHTML = montarPaineis(horarios, cores);
 
     elemento('curso').hidden = false;
     elemento('curso-inexistente').hidden = true;
@@ -167,7 +172,7 @@
   /* --- Inicialização ------------------------------------------------------ */
   async function iniciar() {
     if ((temId && !/^[1-9]\d*$/.test(idSolicitado)) || (!temId && !alvo)) {
-      mostrarAviso('');
+      finalizarCarregamento();
       mostrarNaoEncontrado();
       return;
     }
@@ -176,17 +181,17 @@
       resultado = await buscarHorarios();
     } catch (erro) {
       console.error('Falha ao buscar horários do Supabase:', erro);
-      resultado = { cursos: courses, origem: 'local', aviso: '' };
+      resultado = { cursos: courses, origem: 'local' };
     }
 
-    mostrarAviso(resultado.origem === 'local' ? resultado.aviso : '');
+    finalizarCarregamento();
     const horarios = filtrarHorariosDoCurso(resultado.cursos || [], idSolicitado, alvo, temId);
     if (!horarios.length) {
       mostrarNaoEncontrado();
       return;
     }
 
-    render(horarios, buscarConteudoCurso(courseSlug(horarios[0])));
+    render(horarios, buscarConteudoCurso(horarios[0], horarios[0].descricao));
   }
 
   /* Menu mobile (mesmo comportamento da página inicial). */

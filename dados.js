@@ -14,7 +14,7 @@ const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_7lLG9eRfGVc3PKp19b1Ogg_eFnEiORu
 const STATUS_OVERRIDES = {
   // Exemplo: 'teatro|manhã|segunda-feira': 'Últimas vagas'
 };
-const DEFAULT_STATUS = 'Vagas disponíveis';
+const DEFAULT_STATUS = '';
 
 /* --- Oficinas com agendamento via WhatsApp (sem horário fixo) ------------ */
 const BOOKING_WORKSHOPS = ['Violino', 'Informática', 'Flauta'];
@@ -77,6 +77,7 @@ function escapeHtml(value) { return String(value ?? '').replace(/[&<>"']/g, char
 function statusFor(course) { if (course.status) return course.status; const key = `${slug(course.name)}|${course.period}|${course.day}`; return STATUS_OVERRIDES[key] || DEFAULT_STATUS; }
 function statusClass(status) {
   const value = String(status || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+  if (!value) return '';
   if (value.includes('lotad') || value.includes('sem vaga') || value.includes('indispon')) return 'status-full';
   if (value.includes('ult')) return 'status-last';
   return 'status-open';
@@ -151,17 +152,13 @@ function normalizarHorario(row) {
 }
 
 /* --- Consulta de horários no Supabase ------------------------------------ */
-/* Busca os horários públicos. Sempre devolve {cursos, origem, aviso}:
+/* Busca os horários públicos. Sempre devolve {cursos, origem}:
    - cursos: lista normalizada (vinda do banco ou o catálogo local);
-   - origem: 'supabase' | 'local';
-   - aviso: mensagem opcional para exibir quando o fallback local foi usado. */
+   - origem: 'supabase' | 'local' (diagnóstico interno; não exibir na interface). */
 async function buscarHorarios() {
   if (!window.supabase || !window.supabase.createClient) {
-    return {
-      cursos: courses,
-      origem: 'local',
-      aviso: 'Não foi possível carregar o Supabase. Exibindo o catálogo de referência local.'
-    };
+    console.warn('Cliente Supabase indisponível; usando o catálogo local de referência.');
+    return { cursos: courses, origem: 'local' };
   }
   try {
     const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
@@ -174,19 +171,12 @@ async function buscarHorarios() {
     if (error) throw error;
     const horarios = (data || []).map(normalizarHorario).filter(item => item.name && !isBookingWorkshop(item));
     if (horarios.length) {
-      return { cursos: horarios, origem: 'supabase', aviso: '' };
+      return { cursos: horarios, origem: 'supabase' };
     }
-    return {
-      cursos: courses,
-      origem: 'local',
-      aviso: 'O Supabase respondeu, mas não há horários públicos visíveis no momento. Exibindo o catálogo de referência local. Verifique se há registros em “horarios” e se a política de leitura pública permite acessá-los.'
-    };
+    console.info('A consulta não retornou horários ativos; usando o catálogo local de referência.');
+    return { cursos: courses, origem: 'local' };
   } catch (error) {
     console.error('Falha ao carregar horários do Supabase:', error);
-    return {
-      cursos: courses,
-      origem: 'local',
-      aviso: 'Não foi possível consultar os horários no Supabase. Exibindo o catálogo de referência local; confira a configuração da tabela e as permissões de leitura.'
-    };
+    return { cursos: courses, origem: 'local' };
   }
 }
