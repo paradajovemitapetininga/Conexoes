@@ -16,7 +16,7 @@ const STATUS_OVERRIDES = {
 };
 const DEFAULT_STATUS = 'Vagas disponíveis';
 
-/* --- Oficinas com agendamento via WhatsApp (sem horários no banco) ------- */
+/* --- Oficinas com agendamento via WhatsApp (sem horário fixo) ------------ */
 const BOOKING_WORKSHOPS = ['Violino', 'Informática', 'Flauta'];
 
 /* --- Catálogo local de referência (fallback quando o Supabase falha) ------ */
@@ -33,13 +33,54 @@ const slug = (value) => String(value ?? '').normalize('NFD').replace(/[\u0300-\u
 /* Slug estável de um curso — recebe o nome (string) ou o objeto do curso. */
 const courseSlug = (course) => slug(typeof course === 'string' ? course : (course && course.name) || '');
 
-const isBookingWorkshop = (name) => /^(violino|informatica|flauta)(?:\b|$)/i.test(String(name || '').normalize('NFD').replace(/[\u0300-\u036f]/g, ''));
+const isBookingWorkshop = (courseOrName) => {
+  const course = courseOrName && typeof courseOrName === 'object' ? courseOrName : null;
+  const name = course ? course.name : courseOrName;
+  const normalizedName = String(name || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim().toLowerCase();
+  const isBookingName = BOOKING_WORKSHOPS.some(item => {
+    const base = item.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+    return normalizedName === base || normalizedName.startsWith(base + ' ');
+  });
+  if (!isBookingName) return false;
+  /* Uma turma com horário real permanece no catálogo, mesmo que a oficina
+     também aceite agendamento por WhatsApp. */
+  if (course && (course.hasFixedSchedule || (course.day && course.time && course.time !== 'Horário não informado'))) return false;
+  return true;
+};
+
+const courseDetailsUrl = (course) => {
+  const id = String(course ? (course.oficinaId ?? course.id) : '').trim();
+  if (/^[1-9]\d*$/.test(id)) return `curso.html?id=${encodeURIComponent(id)}`;
+  const courseId = courseSlug(course);
+  if (!courseId) {
+    console.warn('Link de detalhes omitido: curso sem ID válido e sem slug.', course);
+    return '';
+  }
+  return `curso.html?c=${encodeURIComponent(courseId)}`;
+};
+
+function filtrarHorariosDoCurso(horarios, id, slugCurso, temId) {
+  const lista = Array.isArray(horarios) ? horarios : [];
+  if (temId) {
+    const idValido = String(id || '').trim();
+    if (!/^[1-9]\d*$/.test(idValido)) return [];
+    return lista.filter(curso => String(curso.oficinaId ?? curso.id ?? '') === idValido);
+  }
+  const alvo = slug(slugCurso);
+  if (!alvo) return [];
+  return lista.filter(curso => courseSlug(curso) === alvo);
+}
 
 function escapeHtml(value) { return String(value ?? '').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char])); }
 
 /* --- Status de vagas ------------------------------------------------------ */
 function statusFor(course) { if (course.status) return course.status; const key = `${slug(course.name)}|${course.period}|${course.day}`; return STATUS_OVERRIDES[key] || DEFAULT_STATUS; }
-function statusClass(status) { return status.toLowerCase().includes('lotad') ? 'status-full' : status.toLowerCase().includes('últ') ? 'status-last' : 'status-open'; }
+function statusClass(status) {
+  const value = String(status || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+  if (value.includes('lotad') || value.includes('sem vaga') || value.includes('indispon')) return 'status-full';
+  if (value.includes('ult')) return 'status-last';
+  return 'status-open';
+}
 
 /* --- Normalização das linhas do banco ------------------------------------ */
 function normalizarCategoria(value) {
@@ -67,20 +108,45 @@ function periodoDaLinha(row) {
   if (!Number.isFinite(hour)) return 'horário não informado';
   return hour < 12 ? 'manhã' : hour < 18 ? 'tarde' : 'noite';
 }
+/* Formata a faixa etária somente quando os limites existem no banco. */
+function faixaEtaria(oficina) {
+  if (oficina.faixa_etaria) return oficina.faixa_etaria;
+  const min = oficina.idade_min !== null && oficina.idade_min !== undefined && oficina.idade_min !== '' && Number.isFinite(Number(oficina.idade_min)) ? Number(oficina.idade_min) : null;
+  const max = oficina.idade_max !== null && oficina.idade_max !== undefined && oficina.idade_max !== '' && Number.isFinite(Number(oficina.idade_max)) ? Number(oficina.idade_max) : null;
+  if (min !== null && max !== null) return `${min} a ${max} anos`;
+  if (min !== null) return `A partir de ${min} anos`;
+  if (max !== null) return `Até ${max} anos`;
+  return '';
+}
+
+function statusDeBanco(value) {
+  const status = String(value || '').trim().toLowerCase();
+  if (status === 'sem_vagas') return 'Sem vagas';
+  if (status === 'indisponivel') return 'Indisponível';
+  if (status === 'disponivel') return 'Vagas disponíveis';
+  return value || '';
+}
+
 /* Converte uma linha de "horarios" no mesmo formato usado pelo catálogo. */
 function normalizarHorario(row) {
   const oficina = row.oficinas || {};
   const professor = row.professores || {};
   const inicio = formatarHora(row.hora_inicio), fim = formatarHora(row.hora_fim);
   return {
+    id: oficina.id ?? row.oficina_id ?? null,
+    oficinaId: oficina.id ?? row.oficina_id ?? null,
+    horarioId: row.id ?? null,
     name: oficina.nome || row.nome || 'Atividade',
+    descricao: oficina.descricao || '',
     category: normalizarCategoria(oficina.categorias?.nome || row.categoria),
     period: periodoDaLinha(row),
     day: nomeDia(row.dia_semana),
     time: inicio && fim ? `${inicio}–${fim}` : inicio || fim || 'Horário não informado',
     instructor: professor.nome || row.professor || '—',
-    age: oficina.faixa_etaria || row.faixa_etaria || '',
-    status: row.status || ''
+    age: faixaEtaria(oficina) || row.faixa_etaria || '',
+    status: statusDeBanco(row.status),
+    scheduleType: row.tipo || '',
+    hasFixedSchedule: Boolean(row.dia_semana !== null && row.dia_semana !== undefined && (row.hora_inicio || row.hora_fim))
   };
 }
 
@@ -100,10 +166,13 @@ async function buscarHorarios() {
   try {
     const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
     const { data, error } = await db.from('horarios')
-      .select('dia_semana,hora_inicio,hora_fim,status,oficinas(nome,categorias(nome)),professores(nome)')
-      .order('dia_semana');
+      .select('id,oficina_id,dia_semana,hora_inicio,hora_fim,tipo,status,ativo,oficinas!inner(id,nome,descricao,idade_min,idade_max,ativo,categorias(nome)),professores(nome)')
+      .eq('ativo', true)
+      .eq('oficinas.ativo', true)
+      .order('dia_semana')
+      .order('hora_inicio');
     if (error) throw error;
-    const horarios = (data || []).map(normalizarHorario).filter(item => item.name && !isBookingWorkshop(item.name));
+    const horarios = (data || []).map(normalizarHorario).filter(item => item.name && !isBookingWorkshop(item));
     if (horarios.length) {
       return { cursos: horarios, origem: 'supabase', aviso: '' };
     }
