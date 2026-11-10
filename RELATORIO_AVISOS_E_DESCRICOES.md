@@ -67,3 +67,10 @@ Os textos são descrições gerais das atividades, não currículos da institui�
 ## Pendências externas
 
 Nenhuma alteração de banco foi necessária. A PR permanece aberta para revisão/merge. A confirmação institucional das pendências de conteúdo e atualização dos dados de horário/professor/vagas é recomendada; sem dados ativos no Supabase, esta tarefa não pode confirmar que a lista local de referência represente a programação atual.
+
+
+## Complemento de validação e publicação
+
+A revisão das descrições resultou em **28 de confiança alta, 4 média e 1 baixa**; essas classificações e as observações por oficina estão na matriz CSV. O segundo smoke test carregou diretamente os 33 detalhes e registrou **0 erros no console, 0 erros de página, 0 requisições falhas e 0 respostas de erro HTTP do site**.
+
+Após o push do commit `bc809cc`, a verificação da Vercel reportou o deployment como concluído. A URL [Preview da branch](https://conexoes-polo1-git-feature-saiba-mais-conexoes-1.vercel.app/) redireciona visitantes sem sessão para o login da Vercel (SSO/proteção do projeto). Portanto, o deployment foi confirmado pela Vercel, mas a inspeção visual diretamente nesse Preview depende de acesso autenticado ao projeto; os testes locais acima cobrem as rotas e viewports solicitados.
