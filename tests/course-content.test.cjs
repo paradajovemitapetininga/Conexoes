@@ -7,6 +7,7 @@ const test = require('node:test');
 const root = path.join(__dirname, '..');
 const dataSource = fs.readFileSync(path.join(root, 'dados.js'), 'utf8');
 const contentSource = fs.readFileSync(path.join(root, 'curso-conteudo.js'), 'utf8');
+const coursePageSource = fs.readFileSync(path.join(root, 'curso.js'), 'utf8');
 
 function createContentContext() {
   const logs = { warn: [], info: [], error: [] };
@@ -64,6 +65,11 @@ test('templates existentes são segunda prioridade e complementos locais são te
   assert.equal(template.titulo, 'Capoeira');
   assert.equal(complement.origemConteudo, 'complemento');
   assert.match(complement.texto, /^Hapkido é uma arte marcial de origem coreana/);
+});
+
+test('somente template visual ativa a capitalização especial do título', () => {
+  assert.match(coursePageSource, /const temTemplateVisual = Boolean\(conteudo && conteudo\.imagem\)/);
+  assert.match(coursePageSource, /curso-com-template', temTemplateVisual/);
 });
 
 test('nomes semelhantes usam slugs exatos e descrições distintas', () => {
