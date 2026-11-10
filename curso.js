@@ -16,13 +16,6 @@
   const elemento = (id) => document.querySelector('#' + id);
 
   /* --- Montagem da página ------------------------------------------------- */
-  function mostrarAviso(mensagem) {
-    const aviso = elemento('curso-aviso');
-    if (!aviso) return;
-    aviso.textContent = mensagem || '';
-    aviso.hidden = !mensagem;
-  }
-
   function mostrarNaoEncontrado() {
     elemento('curso').hidden = true;
     elemento('curso-inexistente').hidden = false;
@@ -171,7 +164,7 @@
       return;
     }
 
-    mostrarAviso(resultado.origem === 'local' ? resultado.aviso : '');
+    if (resultado.origem === 'local') console.info('Catálogo de referência local em uso:', resultado.aviso);
     render(horarios, buscarConteudoCurso(alvo));
   }
 
