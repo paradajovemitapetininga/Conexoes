@@ -1,5 +1,5 @@
 /* =============================================================================
-   curso.js — página individual de curso (curso.html?id=<id> ou ?c=<slug>)
+   curso.js — página individual de curso (curso.html?c=<slug>)
    -----------------------------------------------------------------------------
    Lê o parâmetro "c", agrupa todos os horários reais daquele curso e monta a
    página. Cursos que têm template em curso-conteudo.js ganham foto, texto e
@@ -11,18 +11,11 @@
 
   const ORDEM_PERIODOS = ['manhã', 'tarde', 'noite'];
   const parametros = new URLSearchParams(window.location.search);
-  const temId = parametros.has('id');
-  const idSolicitado = (parametros.get('id') || '').trim();
   const alvo = (parametros.get('c') || '').trim().toLowerCase();
 
   const elemento = (id) => document.querySelector('#' + id);
 
   /* --- Montagem da página ------------------------------------------------- */
-  function finalizarCarregamento() {
-    const estado = elemento('curso-aviso');
-    if (estado) estado.hidden = true;
-  }
-
   function mostrarNaoEncontrado() {
     elemento('curso').hidden = true;
     elemento('curso-inexistente').hidden = false;
@@ -60,17 +53,15 @@
   }
 
   function cartaoVaga(horario) {
-    const status = String(statusFor(horario) || '').trim();
+    const status = statusFor(horario);
     const periodo = String(horario.period || '').toLowerCase();
-    const rotuloStatus = status && status === DEFAULT_STATUS && periodo
+    const rotuloStatus = status === DEFAULT_STATUS && periodo
       ? `${status} pela ${periodo}`
       : status;
-    const disponibilidade = status ? `<p>${escapeHtml(rotuloStatus)}</p>` : '';
     const professor = horario.instructor && horario.instructor !== '—'
       ? `<p><strong>Professor:</strong> ${escapeHtml(horario.instructor)}</p>`
       : '';
-    if (!disponibilidade && !professor) return '';
-    return `<div class="curso-painel-card">${disponibilidade}${professor}</div>`;
+    return `<div class="curso-painel-card"><p>${escapeHtml(rotuloStatus)}</p>${professor}</div>`;
   }
 
   function painel(classes, rotulo, fundo, destaque, conteudo) {
@@ -90,19 +81,16 @@
       grupo.itens.map(cartaoHorario).join('')
     )).join('');
 
-    const temStatus = horarios.some(horario => Boolean(statusFor(horario)));
-    const temProfessor = horarios.some(horario => horario.instructor && horario.instructor !== '—');
-    const colunaInformacoes = temStatus || temProfessor
-      ? `<div class="curso-painel-coluna">${painel(
-          temStatus ? 'curso-painel-vagas' : 'curso-painel-professores',
-          temStatus ? 'Vagas' : 'Professores',
-          cores.vagas,
-          cores.vagasDestaque,
-          horarios.map(cartaoVaga).join('')
-        )}</div>`
-      : '';
+    const colunaVagas = painel(
+      'curso-painel-vagas',
+      'Vagas',
+      cores.vagas,
+      cores.vagasDestaque,
+      horarios.map(cartaoVaga).join('')
+    );
 
-    return `<div class="curso-painel-coluna">${colunaPeriodos}</div>${colunaInformacoes}`;
+    return `<div class="curso-painel-coluna">${colunaPeriodos}</div>
+            <div class="curso-painel-coluna">${colunaVagas}</div>`;
   }
 
   function render(horarios, conteudo) {
@@ -120,14 +108,11 @@
     elemento('curso-categoria').textContent = primeiro.category || '';
     elemento('curso-categoria').hidden = !primeiro.category;
     elemento('curso-titulo').textContent = titulo;
-    const temTemplateVisual = Boolean(conteudo && conteudo.imagem);
-    elemento('curso').classList.toggle('curso-com-template', temTemplateVisual);
+    elemento('curso').classList.toggle('curso-com-template', Boolean(conteudo));
 
     const texto = elemento('curso-texto');
-    const descricao = String(primeiro.descricao || primeiro.description || '').trim();
-    const textoApresentacao = descricao || (conteudo && conteudo.texto) || '';
-    if (textoApresentacao) {
-      texto.textContent = textoApresentacao;
+    if (conteudo && conteudo.texto) {
+      texto.textContent = conteudo.texto;
       texto.hidden = false;
     } else {
       texto.textContent = '';
@@ -136,23 +121,14 @@
 
     const blocoFoto = elemento('curso-foto-bloco');
     const foto = elemento('curso-foto');
-    const apresentacao = elemento('curso-apresentacao');
     if (conteudo && conteudo.imagem) {
-      foto.onerror = () => {
-        console.warn(`Imagem de template não encontrada: ${conteudo.imagem}`);
-        blocoFoto.hidden = true;
-        apresentacao.classList.add('curso-apresentacao-sem-imagem');
-      };
       foto.src = conteudo.imagem;
       foto.alt = conteudo.alt || '';
       blocoFoto.hidden = false;
     } else {
-      foto.onerror = null;
       foto.removeAttribute('src');
       blocoFoto.hidden = true;
     }
-    apresentacao.classList.toggle('curso-apresentacao-sem-imagem', blocoFoto.hidden);
-    apresentacao.hidden = !textoApresentacao && !(conteudo && conteudo.imagem);
 
     const cores = (conteudo && conteudo.cores) || {
       destaque: '#0d4d70',
@@ -161,9 +137,7 @@
       vagasDestaque: '#0d4d70'
     };
     elemento('curso').style.setProperty('--destaque-curso', cores.destaque);
-    const paineis = elemento('curso-paineis');
-    paineis.classList.toggle('curso-paineis-uma-coluna', !horarios.some(horario => Boolean(statusFor(horario))));
-    paineis.innerHTML = montarPaineis(horarios, cores);
+    elemento('curso-paineis').innerHTML = montarPaineis(horarios, cores);
 
     elemento('curso').hidden = false;
     elemento('curso-inexistente').hidden = true;
@@ -172,8 +146,7 @@
 
   /* --- Inicialização ------------------------------------------------------ */
   async function iniciar() {
-    if ((temId && !/^[1-9]\d*$/.test(idSolicitado)) || (!temId && !alvo)) {
-      finalizarCarregamento();
+    if (!alvo) {
       mostrarNaoEncontrado();
       return;
     }
@@ -182,17 +155,17 @@
       resultado = await buscarHorarios();
     } catch (erro) {
       console.error('Falha ao buscar horários do Supabase:', erro);
-      resultado = { cursos: courses, origem: 'local' };
+      resultado = { cursos: courses, origem: 'local', aviso: '' };
     }
 
-    finalizarCarregamento();
-    const horarios = filtrarHorariosDoCurso(resultado.cursos || [], idSolicitado, alvo, temId);
+    const horarios = (resultado.cursos || []).filter(curso => courseSlug(curso) === alvo);
     if (!horarios.length) {
       mostrarNaoEncontrado();
       return;
     }
 
-    render(horarios, buscarConteudoCurso(horarios[0], horarios[0].descricao));
+    if (resultado.origem === 'local') console.info('Catálogo de referência local em uso:', resultado.aviso);
+    render(horarios, buscarConteudoCurso(alvo));
   }
 
   /* Menu mobile (mesmo comportamento da página inicial). */
