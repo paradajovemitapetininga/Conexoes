@@ -508,3 +508,14 @@ a { color: inherit; text-decoration: none; }
   .curso-painel-card p { font-size: .84rem; }
   .curso-painel-pill { font-size: .88rem; padding: 7px 24px; }
 }
+
+/* =============================================================================
+   Resumo no card e ficha do curso (público, professor, destaque)
+   ============================================================================= */
+.course-resumo { margin: 12px 0 0; font-size: .84rem; line-height: 1.55; color: var(--muted); }
+.curso-ficha { display: grid; gap: 10px; margin: 20px 0 0; }
+.curso-ficha-item { background: #fff; border-radius: 12px; padding: 12px 15px; box-shadow: 0 4px 14px rgba(18, 48, 71, .06); }
+.curso-ficha dt { margin: 0 0 4px; font-size: .7rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.curso-ficha dd { margin: 0; font-size: .88rem; line-height: 1.55; color: var(--ink); }
+/* Cursos sem foto usam a largura toda para o texto e a ficha. */
+.curso:not(.curso-com-template) .curso-apresentacao { grid-template-columns: 1fr; }
