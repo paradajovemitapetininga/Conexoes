@@ -108,7 +108,7 @@
     elemento('curso-categoria').textContent = primeiro.category || '';
     elemento('curso-categoria').hidden = !primeiro.category;
     elemento('curso-titulo').textContent = titulo;
-    elemento('curso').classList.toggle('curso-com-template', Boolean(conteudo));
+    elemento('curso').classList.toggle('curso-com-template', Boolean(conteudo && conteudo.imagem));
 
     const texto = elemento('curso-texto');
     if (conteudo && conteudo.texto) {
@@ -118,6 +118,22 @@
       texto.textContent = '';
       texto.hidden = true;
     }
+
+    /* Ficha do curso: público, professor, destaque e o que levar (quando houver). */
+    const ficha = [
+      ['curso-ficha-publico', 'curso-publico', conteudo && conteudo.publico, 'Público'],
+      ['curso-ficha-professor', 'curso-professor', conteudo && conteudo.professor, 'Professor'],
+      ['curso-ficha-diferencial', 'curso-diferencial', conteudo && conteudo.diferencial, 'Destaque deste curso'],
+      ['curso-ficha-levar', 'curso-levar', conteudo && conteudo.o_que_levar, 'O que levar']
+    ];
+    ficha.forEach(([idBloco, idValor, valor]) => {
+      const bloco = elemento(idBloco);
+      const texto = elemento(idValor);
+      const preenchido = Boolean(valor && String(valor).trim());
+      if (preenchido) texto.textContent = valor;
+      bloco.hidden = !preenchido;
+    });
+    elemento('curso-ficha').hidden = !ficha.some(([, , valor]) => Boolean(valor && String(valor).trim()));
 
     const blocoFoto = elemento('curso-foto-bloco');
     const foto = elemento('curso-foto');
